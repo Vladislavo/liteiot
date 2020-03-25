@@ -1,4 +1,4 @@
-#include <gateway_protocol.h>
+#include <gateway_protocol/gateway_protocol.h>
 
 
 void gateway_protocol_packet_encode (
