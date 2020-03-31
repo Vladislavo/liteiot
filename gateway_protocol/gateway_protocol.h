@@ -27,7 +27,7 @@ typedef enum {
 } gateway_protocol_stat_t;
 
 void gateway_protocol_packet_encode (
-    const uint8_t dev_id, 
+    const uint8_t dev_id,
     const gateway_protocol_packet_type_t packet_type,
     const uint8_t payload_length,
     const uint8_t *payload,
@@ -35,7 +35,7 @@ void gateway_protocol_packet_encode (
     uint8_t *packet);
 
 uint8_t gateway_protocol_packet_decode (
-    uint8_t *dev_id, 
+    uint8_t *dev_id,
     gateway_protocol_packet_type_t *packet_type,
     uint8_t *payload_length,
     uint8_t *payload,
