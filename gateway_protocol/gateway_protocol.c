@@ -61,7 +61,7 @@ uint8_t gateway_protocol_packet_decode (
     memcpy(payload, &packet[p_len], *payload_length);
     p_len += *payload_length;
 
-    return (memcmp(appkey, app_key, GATEWAY_PROTOCOL_APP_KEY_SIZE) && 
+    return (!memcmp(appkey, app_key, GATEWAY_PROTOCOL_APP_KEY_SIZE) && 
             dev == dev_id &&
             p_len == packet_length);
 }
