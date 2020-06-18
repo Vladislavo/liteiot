@@ -80,7 +80,7 @@ Used to send requested pending message from the gateway.
 
 ## STAT packet
 
-Used to confirm, confirm and inform about pending message, nack the message 
+Used to confirm, confirm and inform about pending message, nack the message
 or inform that there are no pending messages.
 
 ```
@@ -92,6 +92,24 @@ or inform that there are no pending messages.
 |                          status (1 byte)                        |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
+
+# Message Sequence Flow Charts
+
+## Time request
+
+![time-request.png](/img/time-request.png)
+
+## Data send (no pending messages)
+
+![data-send-(no-pending-messages).png](/img/data-send-(no-pending-messages).png)
+
+## Data send (pending message)
+
+![data-send-(pending-message).png](/img/data-send-(pending-message).png)
+
+## Check for a pending message
+
+![check-for-a-pending-message.png](/img/check-for-a-pending-message.png)
 
 # Packet type values
 
