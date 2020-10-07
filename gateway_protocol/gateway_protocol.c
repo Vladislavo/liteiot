@@ -1,13 +1,21 @@
-#include <gateway_protocol/gateway_protocol.h>
-
-#define GATEWAY_PROTOCOL_APP_KEY_SIZE       8
+#include "gateway_protocol.h"
+#include "security_adapter.h"
 
 static uint8_t app_key[GATEWAY_PROTOCOL_APP_KEY_SIZE];
 static uint8_t dev_id = 0xFF;
+static uint8_t secure_key[GATEWAY_PROTOCOL_SECURE_KEY_SIZE];
+static uint8_t secure = 1;
 
-void gateway_protocol_init(const uint8_t *appkey, const uint8_t devid) {
+void gateway_protocol_init(
+    const uint8_t *appkey,
+    const uint8_t devid,
+    const uint8_t *securekey,
+    const uint8_t secured)
+{
     memcpy(app_key, appkey, GATEWAY_PROTOCOL_APP_KEY_SIZE);
     dev_id = devid;
+    memcpy(secure_key, securekey, GATEWAY_PROTOCOL_SECURE_KEY_SIZE);
+    secure = secured;
 }
 
 void gateway_protocol_packet_encode (
@@ -33,6 +41,17 @@ void gateway_protocol_packet_encode (
 
     memcpy(&packet[*packet_length], payload, payload_length);
     (*packet_length) += payload_length;
+
+    if (secure) {
+        security_adapter_encrypt(
+            secure_key,
+            &packet[GATEWAY_PROTOCOL_APP_KEY_SIZE],
+            packet_length,
+            &packet[GATEWAY_PROTOCOL_APP_KEY_SIZE],
+            (*packet_length-GATEWAY_PROTOCOL_APP_KEY_SIZE)
+        );
+        *packet_length += GATEWAY_PROTOCOL_APP_KEY_SIZE;
+    }
 }
 
 uint8_t gateway_protocol_packet_decode (
@@ -49,19 +68,28 @@ uint8_t gateway_protocol_packet_decode (
     memcpy(appkey, &packet[p_len], GATEWAY_PROTOCOL_APP_KEY_SIZE);
     p_len += GATEWAY_PROTOCOL_APP_KEY_SIZE;
 
+    if (secure) {
+        security_adapter_decrypt(
+            secure_key,
+            &packet[GATEWAY_PROTOCOL_APP_KEY_SIZE],
+            (packet_length-GATEWAY_PROTOCOL_APP_KEY_SIZE),
+            &packet[GATEWAY_PROTOCOL_APP_KEY_SIZE],
+            payload_length
+        );
+    }
+
     dev = packet[p_len];
     p_len++;
 
     *packet_type = (gateway_protocol_packet_type_t) packet[p_len];
     p_len++;
 
+    *payload_length = packet[p_len];
     p_len++;
-    *payload_length = packet_length - p_len;
 
     memcpy(payload, &packet[p_len], *payload_length);
     p_len += *payload_length;
 
-    return (!memcmp(appkey, app_key, GATEWAY_PROTOCOL_APP_KEY_SIZE) && 
-            dev == dev_id &&
-            p_len == packet_length);
+    return (!memcmp(appkey, app_key, GATEWAY_PROTOCOL_APP_KEY_SIZE) &&
+            dev == dev_id);
 }

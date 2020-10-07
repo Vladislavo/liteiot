@@ -4,7 +4,9 @@
 #include <stdint.h>
 #include <string.h>
 
-#define GATEWAY_PROTOCOL_PACKET_SIZE_MAX    128
+#define GATEWAY_PROTOCOL_APP_KEY_SIZE       8
+#define GATEWAY_PROTOCOL_MAX_PACKET_SIZE    160
+#define GATEWAY_PROTOCOL_SECURE_KEY_SIZE    16
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,7 +28,11 @@ typedef enum {
     GATEWAY_PROTOCOL_STAT_NACK = 0xFF
 } gateway_protocol_stat_t;
 
-void gateway_protocol_init(const uint8_t *appkey, const uint8_t devid);
+void gateway_protocol_init(
+    const uint8_t *appkey,
+    const uint8_t devid,
+    const uint8_t *securekey,
+    const uint8_t secured);
 
 void gateway_protocol_packet_encode (
     const gateway_protocol_packet_type_t packet_type,
